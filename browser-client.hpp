@@ -70,7 +70,6 @@ public:
 #if CHROME_VERSION_BUILD >= 3683
 	virtual CefRefPtr<CefAudioHandler> GetAudioHandler() override;
 #endif
-
 	virtual bool
 	OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
 #if CHROME_VERSION_BUILD >= 3770
@@ -141,6 +140,11 @@ public:
 					  int sample_rate,
 					  int frames_per_buffer) override;
 
+#endif
+#if CHROME_VERSION_BUILD >= 3904
+	const int kFramesPerBuffer = 1024;
+	virtual bool GetAudioParameters(CefRefPtr<CefBrowser> browser,
+					CefAudioParameters &params);
 #endif
 	/* CefLoadHandler */
 	virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,

@@ -354,6 +354,39 @@ void BrowserClient::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser, int id)
 	bs->audio_streams.erase(pair);
 }
 #endif
+#if CHROME_VERSION_BUILD >= 3904
+static CefAudioHandler::ChannelLayout Convert2CEFSpeakerLayout(int channels)
+{
+	switch (channels) {
+	case 1:
+		return CEF_CHANNEL_LAYOUT_MONO;
+	case 2:
+		return CEF_CHANNEL_LAYOUT_STEREO;
+	case 3:
+		return CEF_CHANNEL_LAYOUT_2_1;
+	case 4:
+		return CEF_CHANNEL_LAYOUT_4_0;
+	case 5:
+		return CEF_CHANNEL_LAYOUT_4_1;
+	case 6:
+		return CEF_CHANNEL_LAYOUT_5_1;
+	case 8:
+		return CEF_CHANNEL_LAYOUT_7_1;
+	default:
+		return CEF_CHANNEL_LAYOUT_UNSUPPORTED;
+	}
+}
+
+bool BrowserClient::GetAudioParameters(CefRefPtr<CefBrowser> browser,
+				       CefAudioParameters &params)
+{
+	int channels = (int)audio_output_get_channels(obs_get_audio());
+	params.channel_layout = Convert2CEFSpeakerLayout(channels);
+	params.sample_rate = (int)audio_output_get_sample_rate(obs_get_audio());
+	params.frames_per_buffer = kFramesPerBuffer;
+	return true;
+}
+#endif
 
 void BrowserClient::OnLoadEnd(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame> frame,
 			      int)
