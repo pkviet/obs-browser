@@ -67,7 +67,6 @@ struct BrowserSource {
 #if EXPERIMENTAL_SHARED_TEXTURE_SUPPORT_ENABLED
 	bool reset_frame = false;
 #endif
-	bool is_showing = false;
 
 	inline void DestroyTextures()
 	{
