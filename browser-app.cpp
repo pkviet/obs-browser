@@ -131,13 +131,6 @@ void BrowserApp::OnContextCreated(CefRefPtr<CefBrowser> browser,
 		CefV8Value::CreateFunction("getStatus", this);
 	obsStudioObj->SetValue("getStatus", getStatus,
 			       V8_PROPERTY_ATTRIBUTE_NONE);
-
-#if !ENABLE_WASHIDDEN
-	int id = browser->GetIdentifier();
-	if (browserVis.find(id) != browserVis.end()) {
-		SetDocumentVisibility(browser, browserVis[id]);
-	}
-#endif
 }
 
 void BrowserApp::ExecuteJSFunction(CefRefPtr<CefBrowser> browser,
@@ -217,9 +210,10 @@ void BrowserApp::SetDocumentVisibility(CefRefPtr<CefBrowser> browser,
 	 * call is made. We'll save the requested visibility
 	 * state here, and use it later in OnContextCreated to
 	 * set initial page visibility state. */
-	browserVis[browser->GetIdentifier()] = isVisible;
+	pendingDocumentVisibilityState = isVisible;
 
 	std::vector<int64> frameIdentifiers;
+
 	/* Set visibility state for every frame in the browser
 	 *
 	 * According to the Page Visibility API documentation:
