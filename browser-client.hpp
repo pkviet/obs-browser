@@ -49,6 +49,13 @@ public:
 	BrowserSource *bs;
 	CefRect popupRect;
 	CefRect originalPopupRect;
+#if CHROME_VERSION_BUILD >= 3683
+	int audio_stream_id;
+	int sample_rate;
+	int channels;
+	ChannelLayout channel_layout;
+	int frames_per_buffer;
+#endif
 
 	inline BrowserClient(BrowserSource *bs_, bool sharing_avail,
 			     bool reroute_audio_)
