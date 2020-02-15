@@ -50,7 +50,6 @@ public:
 	CefRect popupRect;
 	CefRect originalPopupRect;
 #if CHROME_VERSION_BUILD >= 3683
-	int audio_stream_id;
 	int sample_rate;
 	int channels;
 	ChannelLayout channel_layout;
@@ -132,23 +131,21 @@ public:
 					const RectList &dirtyRects,
 					void *shared_handle) override;
 #endif
-#if CHROME_VERSION_BUILD >= 3683
+#if CHROME_VERSION_BUILD >= 3945
 	virtual void OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
-					 int audio_stream_id,
 					 const float **data, int frames,
 					 int64_t pts) override;
 
-	virtual void OnAudioStreamStopped(CefRefPtr<CefBrowser> browser,
-					  int audio_stream_id);
+	virtual void OnAudioStreamStopped(CefRefPtr<CefBrowser> browser);
 
 	virtual void OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
-					  int audio_stream_id, int channels,
+					  int channels,
 					  ChannelLayout channel_layout,
 					  int sample_rate,
 					  int frames_per_buffer) override;
+	virtual void OnAudioStreamError(CefRefPtr<CefBrowser> browser,
+					const CefString &message) override;
 
-#endif
-#if CHROME_VERSION_BUILD >= 3904
 	const int kFramesPerBuffer = 1024;
 	virtual bool GetAudioParameters(CefRefPtr<CefBrowser> browser,
 					CefAudioParameters &params);

@@ -252,9 +252,9 @@ void BrowserClient::OnAcceleratedPaint(CefRefPtr<CefBrowser>, PaintElementType,
 }
 #endif
 
-#if CHROME_VERSION_BUILD >= 3683
+#if CHROME_VERSION_BUILD >= 3945
 void BrowserClient::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
-					 int audio_stream_id_, int channels_,
+					 int channels_,
 					 ChannelLayout channel_layout_,
 					 int sample_rate_,
 					 int frames_per_buffer_)
@@ -263,7 +263,6 @@ void BrowserClient::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
 	channel_layout = channel_layout_;
 	sample_rate = sample_rate_;
 	frames_per_buffer = frames_per_buffer_;
-	audio_stream_id = audio_stream_id_;
 }
 
 static speaker_layout GetSpeakerLayout(CefAudioHandler::ChannelLayout cefLayout)
@@ -293,7 +292,6 @@ static speaker_layout GetSpeakerLayout(CefAudioHandler::ChannelLayout cefLayout)
 }
 
 void BrowserClient::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
-					int audio_stream_id_,
 					const float **data, int frames,
 					int64_t pts)
 {
@@ -302,9 +300,6 @@ void BrowserClient::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
 	if (!bs) {
 		return;
 	}
-
-	if (audio_stream_id != audio_stream_id_)
-		return;
 
 	const uint8_t **pcm = (const uint8_t **)data;
 	speaker_layout speakers = GetSpeakerLayout(channel_layout);
@@ -321,17 +316,20 @@ void BrowserClient::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
 	obs_source_output_audio(bs->source, &audio);
 }
 
-void BrowserClient::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser,
-					 int audio_stream_id_)
+void BrowserClient::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser)
 {
 	if (!bs) {
 		return;
 	}
-	if (audio_stream_id != audio_stream_id_)
-		return;
 }
-#endif
-#if CHROME_VERSION_BUILD >= 3904
+
+void BrowserClient::OnAudioStreamError(CefRefPtr<CefBrowser> browser,
+	const CefString &message) {
+	if (!bs) {
+		return;
+	}
+}
+
 static CefAudioHandler::ChannelLayout Convert2CEFSpeakerLayout(int channels)
 {
 	switch (channels) {
